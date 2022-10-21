@@ -1,0 +1,135 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ReadDept",
+						"type": "DatasetReference"
+					},
+					"name": "FromDept"
+				},
+				{
+					"dataset": {
+						"referenceName": "ReadEmp",
+						"type": "DatasetReference"
+					},
+					"name": "FromEmp"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TgtEmp",
+						"type": "DatasetReference"
+					},
+					"name": "LoadEmp"
+				},
+				{
+					"dataset": {
+						"referenceName": "TgtDept",
+						"type": "DatasetReference"
+					},
+					"name": "LoadDept"
+				}
+			],
+			"transformations": [
+				{
+					"name": "deriveTargetRevenue"
+				},
+				{
+					"name": "ChangeColumnNames"
+				},
+				{
+					"name": "joinDept"
+				},
+				{
+					"name": "DropColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          did as integer,",
+				"          dname as string,",
+				"          revenue as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> FromDept",
+				"source(output(",
+				"          eid as integer,",
+				"          ename as string,",
+				"          did as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> FromEmp",
+				"FromDept derive(revenue_target = revenue+(revenue*20/100)) ~> deriveTargetRevenue",
+				"FromEmp select(mapColumn(",
+				"          empid = eid,",
+				"          empname = ename,",
+				"          deptid = did",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ChangeColumnNames",
+				"ChangeColumnNames, FromDept join(deptid == did,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinDept",
+				"joinDept select(mapColumn(",
+				"          empid,",
+				"          empname,",
+				"          dname",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DropColumns",
+				"DropColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          eid as integer,",
+				"          ename as string,",
+				"          salary as integer,",
+				"          dname as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          eid = empid,",
+				"          ename = empname,",
+				"          dname",
+				"     )) ~> LoadEmp",
+				"deriveTargetRevenue sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          did as integer,",
+				"          dname as string,",
+				"          totalrevenue as integer,",
+				"          targetrevenue as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          did,",
+				"          dname,",
+				"          totalrevenue = revenue,",
+				"          targetrevenue = revenue_target",
+				"     )) ~> LoadDept"
+			]
+		}
+	}
+}

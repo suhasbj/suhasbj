@@ -1,0 +1,49 @@
+{
+	"name": "AzureSqlTable2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ORD_NUM",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORD_AMOUNT",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "ADVANCE_AMOUNT",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "ORD_DATE",
+				"type": "date"
+			},
+			{
+				"name": "CUST_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "AGENT_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "ORD_DESCRIPTION",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "SQLTest",
+			"table": "ORDERS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

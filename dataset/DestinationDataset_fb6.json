@@ -1,0 +1,17 @@
+{
+	"name": "DestinationDataset_fb6",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "AzureBlobFSFile"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

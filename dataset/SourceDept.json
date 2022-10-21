@@ -1,0 +1,32 @@
+{
+	"name": "SourceDept",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjdatalakelink",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SourceFileName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().SourceFileName",
+					"type": "Expression"
+				},
+				"fileSystem": "sjcontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

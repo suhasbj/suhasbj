@@ -1,0 +1,28 @@
+{
+	"name": "pq_2",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "ReadOrders1",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ReadOrders1",
+					"dataset": {
+						"referenceName": "ReadOrders1",
+						"type": "DatasetReference"
+					}
+				},
+				{
+					"name": "ReadAgents1",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ReadAgents1",
+					"dataset": {
+						"referenceName": "ReadAgents1",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared ReadAgents1 = let AdfDoc = Sql.Database(\"sjserver.database.windows.net\", \"sjsqldb\", [CreateNavigationProperties = false]), InputTable = AdfDoc{[Schema=\"SQLTest\",Item=\"AGENTS\"]}[Data] in InputTable;\r\nshared ReadOrders1 = let AdfDoc = Sql.Database(\"sjserver.database.windows.net\", \"sjsqldb\", [CreateNavigationProperties = false]), InputTable = AdfDoc{[Schema=\"SQLTest\",Item=\"ORDERS\"]}[Data] in InputTable;\r\nshared UserQuery = let Source = #\"ReadOrders1\",\r\n  #\"Removed columns\" = Table.RemoveColumns(Source, {\"ORD_NUM\", \"ORD_DATE\", \"CUST_CODE\", \"ORD_DESCRIPTION\"}),\r\n  #\"Merged queries\" = Table.NestedJoin(#\"Removed columns\", {\"AGENT_CODE\"}, ReadAgents1, {\"AGENT_CODE\"}, \"ReadAgents1\", JoinKind.LeftOuter),\r\n  #\"Expanded ReadAgents1\" = Table.ExpandTableColumn(#\"Merged queries\", \"ReadAgents1\", {\"AGENT_NAME\", \"COMMISSION\"}, {\"AGENT_NAME\", \"COMMISSION\"}),\r\n  #\"Added custom\" = Table.AddColumn(#\"Expanded ReadAgents1\", \"Total_Commission\", each [COMMISSION] * [ORD_AMOUNT]),\r\n  #\"Grouped rows\" = Table.Group(#\"Added custom\", {\"AGENT_CODE\", \"AGENT_NAME\", \"COMMISSION\"}, {{\"Total_Comm\", each List.Sum([Total_Commission]), type any}}) in #\"Grouped rows\";\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}

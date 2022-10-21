@@ -1,0 +1,19 @@
+{
+	"name": "MetadataDrivenCopyTask_77w_ControlDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "MetadataDrivenCopyTask_77w_20221017"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"table": "MainControlTable_77w"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,45 @@
+{
+	"name": "pl_Param_df",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_Parameterized",
+						"type": "DataFlowReference",
+						"parameters": {
+							"inputPrice": {
+								"value": "@pipeline().parameters.pl_inputPrice",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"pl_inputPrice": {
+				"type": "int"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-14T11:10:35Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

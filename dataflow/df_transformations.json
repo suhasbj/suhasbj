@@ -1,0 +1,154 @@
+{
+	"name": "df_transformations",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ReadEmp2",
+						"type": "DatasetReference"
+					},
+					"name": "Emp2Data"
+				},
+				{
+					"dataset": {
+						"referenceName": "ReadEmp1",
+						"type": "DatasetReference"
+					},
+					"name": "Emp1Data"
+				},
+				{
+					"dataset": {
+						"referenceName": "ReadDept",
+						"type": "DatasetReference"
+					},
+					"name": "DeptData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "LoadDimEmp",
+						"type": "DatasetReference"
+					},
+					"name": "LoadDimEmp"
+				}
+			],
+			"transformations": [
+				{
+					"name": "unionEmp"
+				},
+				{
+					"name": "sortbyEid"
+				},
+				{
+					"name": "joinbyDid"
+				},
+				{
+					"name": "splitOnRevenue"
+				},
+				{
+					"name": "DropColumns"
+				},
+				{
+					"name": "unionHighLow"
+				},
+				{
+					"name": "dropDidHigh"
+				},
+				{
+					"name": "dropDidLow"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          eid as integer,",
+				"          ename as string,",
+				"          salary as integer,",
+				"          did as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Emp2Data",
+				"source(output(",
+				"          eid as integer,",
+				"          ename as string,",
+				"          salary as integer,",
+				"          did as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Emp1Data",
+				"source(output(",
+				"          did as integer,",
+				"          dname as string,",
+				"          revenue as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DeptData",
+				"Emp2Data, Emp1Data union(byName: true)~> unionEmp",
+				"unionEmp sort(asc(eid, true)) ~> sortbyEid",
+				"sortbyEid, DeptData join(unionEmp@did == DeptData@did,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinbyDid",
+				"joinbyDid split(revenue>=400000,",
+				"     disjoint: false) ~> splitOnRevenue@(HighRev, LowRev)",
+				"unionHighLow select(mapColumn(",
+				"          eid,",
+				"          ename,",
+				"          salary,",
+				"          dname",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DropColumns",
+				"dropDidHigh, dropDidLow union(byName: true)~> unionHighLow",
+				"splitOnRevenue@HighRev select(mapColumn(",
+				"          eid,",
+				"          ename,",
+				"          salary,",
+				"          did = splitOnRevenue@HighRev@did,",
+				"          dname,",
+				"          revenue",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> dropDidHigh",
+				"splitOnRevenue@LowRev select(mapColumn(",
+				"          eid,",
+				"          ename,",
+				"          salary,",
+				"          did = splitOnRevenue@LowRev@did,",
+				"          dname,",
+				"          revenue",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> dropDidLow",
+				"DropColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          eid as integer,",
+				"          ename as string,",
+				"          salary as integer,",
+				"          dname as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          eid,",
+				"          ename,",
+				"          salary,",
+				"          dname",
+				"     )) ~> LoadDimEmp"
+			]
+		}
+	}
+}

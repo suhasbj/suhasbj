@@ -1,0 +1,6 @@
+{
+	"name": "sjintegrationRuntime1",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

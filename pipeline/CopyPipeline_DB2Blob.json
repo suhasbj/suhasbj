@@ -1,0 +1,110 @@
+{
+	"name": "CopyPipeline_DB2Blob",
+	"properties": {
+		"description": "This pipeline will copy the data from 2 database tables to files",
+		"activities": [
+			{
+				"name": "ForEach_o1e",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_o1e",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "cogni.@{item().source.table}"
+								},
+								{
+									"name": "Destination",
+									"value": "sjtarget//@{item().destination.fileName}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"validateDataConsistency": false
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset_o1e",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_table": "@item().source.table"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset_o1e",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_fileName": "@item().destination.fileName"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"source": {
+							"table": "author"
+						},
+						"destination": {
+							"fileName": "cogniauthor.csv"
+						}
+					},
+					{
+						"source": {
+							"table": "book"
+						},
+						"destination": {
+							"fileName": "cognibook.csv"
+						}
+					}
+				]
+			}
+		},
+		"folder": {
+			"name": "Archive"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-12T09:43:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,20 @@
+{
+	"name": "MetadataDrivenCopyTask_eni_ControlDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "MetadataDrivenCopyTask_eni_20221010"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "source",
+			"table": "MainControlTable_eni"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

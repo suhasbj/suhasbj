@@ -1,0 +1,9 @@
+{
+	"name": "sjdatafactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ecaf58b5-d472-404e-98bc-98ad86fb37df",
+		"tenantId": "bc85051a-e9c8-44f4-9115-b449ddb38872"
+	}
+}

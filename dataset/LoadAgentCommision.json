@@ -1,0 +1,17 @@
+{
+	"name": "LoadAgentCommision",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "SQLTest",
+			"table": "Agent_Comm"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

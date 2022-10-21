@@ -1,0 +1,122 @@
+{
+	"name": "dataflowNitish",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ReadDept",
+						"type": "DatasetReference"
+					},
+					"name": "extractDept1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ReadEmp",
+						"type": "DatasetReference"
+					},
+					"name": "extractEmp"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TgtRevenue",
+						"type": "DatasetReference"
+					},
+					"name": "loadTarget"
+				},
+				{
+					"dataset": {
+						"referenceName": "TgtEmpDept",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedTargetRev"
+				},
+				{
+					"name": "dropRevenue"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          did as integer,",
+				"          dname as string,",
+				"          revenue as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> extractDept1",
+				"source(output(",
+				"          eid as integer,",
+				"          ename as string,",
+				"          did as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> extractEmp",
+				"extractDept1 derive(TargetRev = revenue+revenue*20/100) ~> derivedTargetRev",
+				"derivedTargetRev select(mapColumn(",
+				"          did,",
+				"          dname,",
+				"          TargetRev",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> dropRevenue",
+				"extractEmp, extractDept1 join(extractEmp@did == extractDept1@did,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          Eid = eid,",
+				"          Ename = ename,",
+				"          Dname = dname",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"dropRevenue sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Did = did,",
+				"          Dname = dname,",
+				"          TargetRev",
+				"     )) ~> loadTarget",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Eid,",
+				"          Ename,",
+				"          Dname",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

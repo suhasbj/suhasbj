@@ -1,0 +1,43 @@
+{
+	"name": "ReadAgents1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "AGENT_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "AGENT_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "WORKING_AREA",
+				"type": "varchar"
+			},
+			{
+				"name": "COMMISSION",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "PHONE_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "COUNTRY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "SQLTest",
+			"table": "AGENTS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

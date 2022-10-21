@@ -1,0 +1,38 @@
+{
+	"name": "ReadEmp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjdatalakelink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Emp.csv",
+				"folderPath": "Input",
+				"fileSystem": "sjdata"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "eid",
+				"type": "String"
+			},
+			{
+				"name": "ename",
+				"type": "String"
+			},
+			{
+				"name": "did",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

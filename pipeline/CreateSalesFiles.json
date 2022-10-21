@@ -1,0 +1,114 @@
+{
+	"name": "CreateSalesFiles",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach_m3k",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_m3k",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "SQLTest.@{item().source.table}"
+								},
+								{
+									"name": "Destination",
+									"value": "sjdata/Input/@{item().destination.fileName}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"validateDataConsistency": false
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset_m3k",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_table": "@item().source.table"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset_m3k",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_fileName": "@item().destination.fileName"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"source": {
+							"table": "AGENTS"
+						},
+						"destination": {
+							"fileName": "SQLTestAGENTS.csv"
+						}
+					},
+					{
+						"source": {
+							"table": "CUSTOMER"
+						},
+						"destination": {
+							"fileName": "SQLTestCUSTOMER.csv"
+						}
+					},
+					{
+						"source": {
+							"table": "ORDERS"
+						},
+						"destination": {
+							"fileName": "SQLTestORDERS.csv"
+						}
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-13T09:24:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

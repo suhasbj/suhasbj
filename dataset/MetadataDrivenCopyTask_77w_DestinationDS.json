@@ -1,0 +1,27 @@
+{
+	"name": "MetadataDrivenCopyTask_77w_DestinationDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cw_table": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "MetadataDrivenCopyTask_77w_20221017"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"table": {
+				"value": "@dataset().cw_table",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

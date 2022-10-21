@@ -1,0 +1,66 @@
+{
+	"name": "df_Parameterized",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ReadTblBook",
+						"type": "DatasetReference"
+					},
+					"name": "ReadTblBook"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TrgBook",
+						"type": "DatasetReference"
+					},
+					"name": "sinkTrgBook"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterOnPrice"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     inputPrice as integer",
+				"}",
+				"source(output(",
+				"          bookid as integer,",
+				"          bookname as string,",
+				"          price as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> ReadTblBook",
+				"ReadTblBook filter(price>=$inputPrice) ~> filterOnPrice",
+				"filterOnPrice sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          bookid as integer,",
+				"          bookname as string,",
+				"          price as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          bookid,",
+				"          bookname,",
+				"          price",
+				"     )) ~> sinkTrgBook"
+			]
+		}
+	}
+}
