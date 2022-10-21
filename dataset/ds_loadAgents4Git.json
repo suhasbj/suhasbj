@@ -1,0 +1,35 @@
+{
+	"name": "ds_loadAgents4Git",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sjdatalakelink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "sjtarget"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "authorid",
+				"type": "String"
+			},
+			{
+				"name": "authorname",
+				"type": "String"
+			},
+			{
+				"name": "contactno",
+				"type": "String"
+			}
+		]
+	}
+}
