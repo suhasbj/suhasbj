@@ -1,0 +1,9 @@
+{
+	"name": "sjAssessment",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1aa2799e-d6cd-4158-8966-f9252b5c0c6f",
+		"tenantId": "bc85051a-e9c8-44f4-9115-b449ddb38872"
+	}
+}
